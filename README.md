@@ -20,7 +20,7 @@ LINC.Setup\
 ## What it does
 
 - Creates a local standard user account.
-- Installs Google Chrome.
+- Installs Google Chrome. Set as default browser.
 - Installs Zoom.
 - Runs Microsoft Update / Windows Update.
 - Provides consistent logging and error handling.
