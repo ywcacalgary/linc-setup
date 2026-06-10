@@ -15,7 +15,7 @@ function Install-LincWindowsUpdate {
         }
 
         Import-Module PSWindowsUpdate -ErrorAction Stop
-        Add-WUServiceManager -MicrosoftUpdate -ErrorAction Stop | Out-Null
+        Add-WUServiceManager -MicrosoftUpdate -Confirm:$false -ErrorAction Stop | Out-Null
 
         Write-LincLog -Message 'Installing available updates.'
         if ($AutoReboot) {
