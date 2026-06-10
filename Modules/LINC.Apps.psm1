@@ -32,6 +32,57 @@ function Install-LincGoogleChrome {
             throw 'Chrome executable not found after installation.'
         }
 
+        Write-LincLog -Message 'Setting Chrome as default browser.'
+
+        # Force set Google Chrome as default browser for ALL users in Windows 11
+        $xmlPath = "C:\DefaultApps.xml"
+
+        Write-LincLog -Message "Exporting current default app associations."
+        Dism /Online /Export-DefaultAppAssociations:$xmlPath | Out-Null
+
+        Write-LincLog -Message "Updating XML to set Google Chrome as default."
+        [xml]$xmlContent = Get-Content $xmlPath
+
+        # Define the associations to change
+        $targets = @(".htm", ".html", ".mhtml", ".shtml", ".xhtml", ".xml", "http", "https")
+
+        foreach ($assoc in $xmlContent.DefaultAssociations.Association) {
+            if ($targets -contains $assoc.Identifier) {
+                $assoc.ProgId = "ChromeHTML"
+                $assoc.ApplicationName = "Google Chrome"
+            }
+        }
+
+        # Save updated XML
+        $xmlContent.Save($xmlPath)
+
+        Write-LincLog -Message "Importing updated default app associations for NEW users."
+        Dism /Online /Import-DefaultAppAssociations:$xmlPath | Out-Null
+
+        # Apply to existing users
+        Write-LincLog -Message "Applying changes to EXISTING users."
+        $users = Get-ChildItem "C:\Users" -Directory | Where-Object { $_.Name -notin @("All Users","Default","Default User","Public") }
+
+        foreach ($user in $users) {
+            $userProfile = $user.FullName
+            $assocFile = "$userProfile\AppData\Local\Microsoft\Windows\Shell\DefaultAppAssociations.xml"
+
+            # Create directory if missing
+            $assocDir = Split-Path $assocFile
+            if (-not (Test-Path $assocDir)) {
+                New-Item -ItemType Directory -Path $assocDir -Force | Out-Null
+            }
+
+            # Copy updated XML to user profile
+            Copy-Item $xmlPath $assocFile -Force
+        }
+
+        Write-LincLog -Message "Forcing Windows to reload default app settings."
+        Stop-Process -Name explorer -Force
+        Start-Process explorer
+
+        Write-LincLog -Message "Google Chrome is now the default browser for ALL users."
+
         Write-LincLog -Message 'Google Chrome installation complete.' -Level Success
     }
     catch {
