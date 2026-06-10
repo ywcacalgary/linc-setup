@@ -52,7 +52,7 @@ try {
     Copy-Item -Path $moduleSource -Destination (Join-Path $stagingRoot 'Modules') -Recurse -Force
 
     $stagedScript = Join-Path $stagingRoot 'LINC.Setup.ps1'
-    Invoke-PS2EXE -InputFile $stagedScript -OutputFile $exePath -NoConsole -ErrorAction Stop
+    Invoke-PS2EXE -InputFile $stagedScript -OutputFile $exePath -requireAdmin:$true -ErrorAction Stop
 
     Copy-Item -Path (Join-Path $stagingRoot 'Modules') -Destination $packageRoot -Recurse -Force
     Copy-Item -Path (Join-Path $stagingRoot 'LINC.Setup.psd1') -Destination $packageRoot -Force

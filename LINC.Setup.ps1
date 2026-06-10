@@ -3,7 +3,7 @@
 
 [CmdletBinding()]
 param(
-    [string]$ModuleRoot = (Join-Path $PSScriptRoot 'Modules')
+    [string]$ModuleRoot = '.\Modules' #(Join-Path $PSScriptRoot 'Modules')
 )
 
 Set-StrictMode -Version Latest
@@ -43,4 +43,7 @@ try {
 catch {
     Write-LincLog -Message "Setup failed: $($_.Exception.Message)" -Level Error
     exit 1
+}
+finally {
+    Read-Host -Prompt "Press ENTER to exit"
 }

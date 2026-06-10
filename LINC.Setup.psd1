@@ -14,7 +14,7 @@
     AliasesToExport    = @()
     PrivateData = @{
         PSData = @{
-            Tags       = @('Windows', 'Setup', 'Automation', 'Chrome', 'Zoom', 'WindowsUpdate')
+            Tags       = @('Windows', 'Setup', 'Automation', 'Chrome', 'Zoom', 'WindowsUpdate', 'LINC')
             ProjectUri = 'https://www.ywcalgary.ca/language-instruction/'
         }
     }
