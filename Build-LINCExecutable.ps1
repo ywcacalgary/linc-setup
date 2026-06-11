@@ -54,10 +54,13 @@ try {
     $stagedScript = Join-Path $stagingRoot 'LINC.Setup.ps1'
     Invoke-PS2EXE -InputFile $stagedScript -OutputFile $exePath -requireAdmin:$true -ErrorAction Stop `
         -Title "LINC Setup" `
+        -Product "LINC Setup" `
         -Description "This tool automates LINC Setup" `
         -Company "YWCA Calgary" `
         -Copyright "© 2026 YWCA Calgary" `
-        -Version "0.1.17"
+        -Version "0.1.17" `
+        -IconFile "icon.ico" `
+
 
     Copy-Item -Path (Join-Path $stagingRoot 'Modules') -Destination $packageRoot -Recurse -Force
     Copy-Item -Path (Join-Path $stagingRoot 'LINC.Setup.psd1') -Destination $packageRoot -Force
