@@ -44,7 +44,7 @@ function Install-LincGoogleChrome {
         [xml]$xmlContent = Get-Content $xmlPath
 
         # Define the associations to change
-        $targets = @(".htm", ".html", ".mhtml", ".shtml", ".xhtml", ".xml", "http", "https")
+        $targets = @(".htm", ".html", ".mhtml", ".shtml", ".xhtml", ".xml", ".pdf","http", "https")
 
         foreach ($assoc in $xmlContent.DefaultAssociations.Association) {
             if ($targets -contains $assoc.Identifier) {

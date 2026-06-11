@@ -60,7 +60,7 @@ try {
         -Copyright "© 2026 YWCA Calgary" `
         -Version "0.1.17" `
         -IconFile "icon.ico" `
-
+        -EmbedFiles ".\Modules\*.*"
 
     Copy-Item -Path (Join-Path $stagingRoot 'Modules') -Destination $packageRoot -Recurse -Force
     Copy-Item -Path (Join-Path $stagingRoot 'LINC.Setup.psd1') -Destination $packageRoot -Force
