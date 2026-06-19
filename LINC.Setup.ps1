@@ -6,6 +6,7 @@ param(
     [string]$ModuleRoot = 'C:\Windows\Temp\Modules' #(Join-Path $PSScriptRoot 'Modules')
 )
 
+Set-ExecutionPolicy -ExecutionPolicy Unrestricted -Scope CurrentUser -Force
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
