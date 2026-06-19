@@ -62,9 +62,6 @@ try {
         -IconFile "icon.ico" `
         -EmbedFiles @{'%windir%\Temp\Modules\LINC.Common.psm1'='.\Modules\LINC.Common.psm1'; '%windir%\Temp\Modules\LINC.Users.psm1'='.\Modules\LINC.Users.psm1'; '%windir%\Temp\Modules\LINC.Apps.psm1'='.\Modules\LINC.Apps.psm1'; '%windir%\Temp\Modules\LINC.Updates.psm1'='.\Modules\LINC.Updates.psm1'}
 
-    Copy-Item -Path (Join-Path $stagingRoot 'Modules') -Destination $packageRoot -Recurse -Force
-    Copy-Item -Path (Join-Path $stagingRoot 'LINC.Setup.psd1') -Destination $packageRoot -Force
-
     Write-BuildLog -Message "Build completed: $exePath" -Level Success
 }
 catch {

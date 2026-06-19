@@ -42,7 +42,7 @@ function Install-LincWindowsUpdate {
 
             Write-LincLog -Message "Installing update: $title"
 
-            Install-WindowsUpdate -MicrosoftUpdate -AcceptAll -IgnoreReboot -Update $update -ErrorAction Stop | Out-Null
+            Install-WindowsUpdate -MicrosoftUpdate -AcceptAll -IgnoreReboot -KBArticleID $update.KB -ErrorAction Stop | Out-Null
         }
 
         Write-Progress -Activity 'Installing Windows updates' -Completed
