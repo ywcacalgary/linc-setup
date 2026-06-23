@@ -37,6 +37,7 @@ function Install-PSTools {
 }
 
 function Reset-PC {
+    Set-Content -Path ".\ComputerName.txt" -Value $env:COMPUTERNAME
     do {
         $response = Read-Host "Do you want to Reset the PC? [Y/N]"
         $response = $response.Trim().ToUpper()
@@ -52,8 +53,6 @@ function Reset-PC {
         } else {
             Write-LincLog -Message "PsExec is installed. Continuing Reset process."
         }
-
-        Set-Content -Path ".\ComputerName.txt" -Value $env:COMPUTERNAME
 
         $MyScriptBlock = {
         
