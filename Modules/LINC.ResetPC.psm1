@@ -37,7 +37,14 @@ function Install-PSTools {
 }
 
 function Reset-PC {
-    Set-Content -Path ".\ComputerName.txt" -Value $env:COMPUTERNAME
+    # Added an if-statement here, if this was not here and it ran a freshly reset pc
+    # it would append the temporary MINWINPC name to the file and throw an error trying to rewrite it.
+    $CurrentComputerName = $env:COMPUTERNAME
+    if (!($CurrentComputerName -eq "MINWINPC")) {
+        Set-Content -Path ".\ComputerName.txt" -Value $env:COMPUTERNAME
+    } else {
+        
+    }
     do {
         $response = Read-Host "Do you want to Reset the PC? [Y/N]"
         $response = $response.Trim().ToUpper()
@@ -45,7 +52,6 @@ function Reset-PC {
 
     if ($response -eq 'Y') {
         Write-LincLog -Message "Initiating system reset..."
-        Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope CurrentUser -Force
 
         if (-not (Get-Command psexec -ErrorAction SilentlyContinue)) {
             Write-LincLog -Message "PsExec is not installed. It will now install." -Level Warning
@@ -55,33 +61,27 @@ function Reset-PC {
         }
 
         $MyScriptBlock = {
-        
-            $CurrentUser = [Security.Principal.WindowsIdentity]::GetCurrent().Name
-            Write-LincLog -Message "Running as: $CurrentUser"
-            psexec -accepteula
-            try { 
-                $namespaceName = "root\cimv2\mdm\dmmap"
-                $className = "MDM_RemoteWipe"
-                $methodName = "doWipeMethod"
+            $namespaceName = "root\cimv2\mdm\dmmap"
+            $className = "MDM_RemoteWipe"
+            $methodName = "doWipeMethod"
 
-                $session = New-CimSession
+            $session = New-CimSession
 
-                $params = New-Object Microsoft.Management.Infrastructure.CimMethodParametersCollection
-                $param = [Microsoft.Management.Infrastructure.CimMethodParameter]::Create("param", "", "String", "In")
-                $params.Add($param)
+            $params = New-Object Microsoft.Management.Infrastructure.CimMethodParametersCollection
+            $param = [Microsoft.Management.Infrastructure.CimMethodParameter]::Create("param", "", "String", "In")
+            $params.Add($param)
 
-                $instance = Get-CimInstance -Namespace $namespaceName -ClassName $className -Filter "ParentID='./Vendor/MSFT' and InstanceID='RemoteWipe'"
-                $session.InvokeMethod($namespaceName, $instance, $methodName, $params)
-            } catch {
-                Write-LincLog -Message "System Reset failed." -Level Error
-            }
+            $instance = Get-CimInstance -Namespace $namespaceName -ClassName $className -Filter "ParentID='./Vendor/MSFT' and InstanceID='RemoteWipe'"
+            $session.InvokeMethod($namespaceName, $instance, $methodName, $params)
         }
 
         $ScriptBytes = [System.Text.Encoding]::Unicode.GetBytes($MyScriptBlock.ToString())
         $EncodedCmd = [Convert]::ToBase64String($ScriptBytes)
 
-        psexec -accepteula
-        psexec -s powershell.exe -NoProfile -NonInteractive -ExecutionPolicy Bypass -EncodedCommand $EncodedCmd
+        # instead of calling "psexec" as you would from powershell this ensures it is called in a separate elevated PS Context
+
+        $psexecPath = Join-Path "$env:windir\System32" "psexec.exe"
+        Start-Process powershell.exe -ArgumentList "-NoExit", "-Command",  "$psexecPath -accepteula -i -s powershell.exe -NonInteractive -NoProfile -EncodedCommand $EncodedCmd"
     } else {
         Write-LincLog -Message "Skipping PC reset." -Level Warning
     }
