@@ -31,6 +31,7 @@ try {
     Import-LincModule -Path (Join-Path $ModuleRoot 'LINC.Updates.psm1')
     Import-LincModule -Path (Join-Path $ModuleRoot 'LINC.RenamePC.psm1')
     Import-LincModule -Path (Join-Path $ModuleRoot 'LINC.ResetPC.psm1')
+    Import-LincModule -Path (Join-Path $ModuleRoot 'LINC.ChangeWiFi.psm1');
 
     if (-not (Test-LincAdministrator)) {
         throw 'This script must be run as Administrator.'
@@ -43,7 +44,15 @@ try {
         Install-LincZoom
     }
     Invoke-LincStep -StepName 'Windows update' -ScriptBlock { Install-LincWindowsUpdate }
+    Invoke-LincStep -StepName 'WiFi Change' -ScriptBlock { 
+        Add-LincWiFi
+        Connect-LincWiFi
+    }
     Invoke-LincStep -StepName 'Rename PC' -ScriptBlock { Rename-LincPC }
+    Write-Linclog -Message "All steps completed." -Level Success
+    Write-Linclog -Message "Computer will now restart to finish Windows update process." -Level Info
+    Start-Sleep -Seconds 5
+    Restart-Computer -Force
 }
 catch {
     Write-LincLog -Message "Setup failed: $($_.Exception.Message)" -Level Error
