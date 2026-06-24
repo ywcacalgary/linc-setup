@@ -12,6 +12,7 @@ LINC.Setup\
   README.md
   Modules\
     LINC.Apps.psm1
+    LINC.ChangeWiFi.psm1
     LINC.Common.psm1
     LINC.RenamePC.psm1
     LINC.ResetPC.psm1
@@ -26,6 +27,7 @@ LINC.Setup\
 - Installs Google Chrome. Set as default browser.
 - Installs Zoom.
 - Runs Microsoft Update / Windows Update.
+- Adds Guest Wi-Fi and authenticates connection.
 - Rename the PC.
 - Provides consistent logging and error handling.
 
