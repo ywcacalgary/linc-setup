@@ -51,6 +51,19 @@ try {
     Copy-Item -Path $manifest -Destination $stagingRoot -Force
     Copy-Item -Path $moduleSource -Destination (Join-Path $stagingRoot 'Modules') -Recurse -Force
 
+    $moduleTable = @{}
+    $moduleFiles = Get-ChildItem -Path $moduleSource -File -ErrorAction Stop
+
+    foreach ($moduleFile in $moduleFiles) {
+        $moduleFilename = [System.IO.Path]::GetFileName($moduleFile.Name)
+        $key = '%windir%\Temp\Modules\' + $moduleFilename
+        $value = '.\Modules\' + $moduleFilename
+
+        if (-not $moduleTable.ContainsKey($key)) {
+            $moduleTable[$key] = $value
+        }
+    }
+
     $stagedScript = Join-Path $stagingRoot 'LINC.Setup.ps1'
     Invoke-PS2EXE -InputFile $stagedScript -OutputFile $exePath -requireAdmin:$true -ErrorAction Stop `
         -Title "LINC Setup" `
@@ -60,7 +73,7 @@ try {
         -Copyright "© 2026 YWCA Calgary" `
         -Version "0.1.17" `
         -IconFile "icon.ico" `
-        -EmbedFiles @{'%windir%\Temp\Modules\LINC.Common.psm1'='.\Modules\LINC.Common.psm1'; '%windir%\Temp\Modules\LINC.Users.psm1'='.\Modules\LINC.Users.psm1'; '%windir%\Temp\Modules\LINC.Apps.psm1'='.\Modules\LINC.Apps.psm1'; '%windir%\Temp\Modules\LINC.Updates.psm1'='.\Modules\LINC.Updates.psm1'; '%windir%\Temp\Modules\LINC.RenamePC.psm1'='.\Modules\LINC.RenamePC.psm1'; '%windir%\Temp\Modules\LINC.ResetPC.psm1'='.\Modules\LINC.ResetPC.psm1'}
+        -EmbedFiles $moduleTable
 
     Write-BuildLog -Message "Build completed: $exePath" -Level Success
 }

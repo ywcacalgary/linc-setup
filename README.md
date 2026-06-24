@@ -1,6 +1,6 @@
 # LINC Setup
 
-PowerShell automation for provisioning a Windows device with a standard local user, custom applications, and Windows Update.
+PowerShell automation for resetting and provisioning a Windows device with a standard local user, custom applications/tasks, and Windows Update.
 
 ## Project layout
 
@@ -11,18 +11,22 @@ LINC.Setup\
   Build-LINCExecutable.ps1
   README.md
   Modules\
-    LINC.Common.psm1
-    LINC.Users.psm1
     LINC.Apps.psm1
+    LINC.Common.psm1
+    LINC.RenamePC.psm1
+    LINC.ResetPC.psm1
     LINC.Updates.psm1
+    LINC.Users.psm1
 ```
 
 ## What it does
 
+- Reset the PC.
 - Creates a local standard user account.
 - Installs Google Chrome. Set as default browser.
 - Installs Zoom.
 - Runs Microsoft Update / Windows Update.
+- Rename the PC.
 - Provides consistent logging and error handling.
 
 ## Requirements
@@ -31,6 +35,7 @@ LINC.Setup\
 - Administrator privileges.
 - Internet access for application downloads and updates.
 - `PSWindowsUpdate` for Windows Update operations.
+- `PsExec` for resetting the PC.
 
 ## Run the setup
 
