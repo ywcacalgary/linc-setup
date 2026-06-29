@@ -46,8 +46,8 @@ try {
     } else {
         Invoke-LincStep -StepName 'User creation' -ScriptBlock { New-LincStudentUser }
         Invoke-LincStep -StepName 'Custom app installation' -ScriptBlock {
-        Install-LincGoogleChrome
-        Install-LincZoom
+            Install-LincGoogleChrome
+            Install-LincZoom
         }
         Invoke-LincStep -StepName 'Windows update' -ScriptBlock { Install-LincWindowsUpdate }
         Invoke-LincStep -StepName 'WiFi Change' -ScriptBlock { 
