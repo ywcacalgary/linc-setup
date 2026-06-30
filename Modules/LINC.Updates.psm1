@@ -16,9 +16,19 @@ function Install-LincWindowsUpdate {
             Install-Module -Name PSWindowsUpdate -Force -Scope AllUsers -Confirm:$false -ErrorAction Stop
         }
 
+        Stop-Service -Name wuauserv
+        (Get-Service -Name wuauserv).WaitForStatus('Stopped', (New-TimeSpan -Seconds 10))
+
+        Start-Service -Name wuauserv
+        (Get-Service -Name wuauserv).WaitForStatus('Running', (New-TimeSpan -Seconds 10))
+
+        Get-BitsTransfer -AllUsers | ForEach-Object {
+            $_.Priority = "Foreground"
+        }
+
         Import-Module PSWindowsUpdate -ErrorAction Stop
         Add-WUServiceManager -MicrosoftUpdate -Confirm:$false -ErrorAction Stop | Out-Null
-
+        Reset-WUComponents
         Write-LincLog -Message 'Querying available updates.'
         $updates = Get-WindowsUpdate -MicrosoftUpdate -AcceptAll -IgnoreReboot -ErrorAction Stop
 
@@ -40,6 +50,7 @@ function Install-LincWindowsUpdate {
                 -CurrentOperation $title `
                 -PercentComplete $percent
 
+            Start-Sleep -Milliseconds 200
             Write-LincLog -Message "Installing update: $title"
 
             Install-WindowsUpdate -MicrosoftUpdate -AcceptAll -IgnoreReboot -KBArticleID $update.KB -ErrorAction Stop | Out-Null
