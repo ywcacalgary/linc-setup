@@ -36,23 +36,32 @@ try {
     if (-not (Test-LincAdministrator)) {
         throw 'This script must be run as Administrator.'
     }
+    do {
+        $response = Read-Host "Do you want to Reset the PC? [Y/N]"
+        $response = $response.Trim().ToUpper()
+    } until ($response -in @('Y','N'))
 
-    Invoke-LincStep -StepName 'Reset PC' -ScriptBlock { Reset-PC }
-    Invoke-LincStep -StepName 'User creation' -ScriptBlock { New-LincStudentUser }
-    Invoke-LincStep -StepName 'Custom app installation' -ScriptBlock {
-        Install-LincGoogleChrome
-        Install-LincZoom
+    if ($response -eq 'Y') {
+        Invoke-LincStep -StepName 'Reset PC' -ScriptBlock { Reset-PC }
+    } else {
+        Invoke-LincStep -StepName 'User creation' -ScriptBlock { New-LincStudentUser }
+        Invoke-LincStep -StepName 'Custom app installation' -ScriptBlock {
+            Install-LincGoogleChrome
+            Install-LincZoom
+        }
+        Invoke-LincStep -StepName 'Windows update' -ScriptBlock { Install-LincWindowsUpdate }
+        Invoke-LincStep -StepName 'WiFi Change' -ScriptBlock { 
+            Add-LincWiFi
+            Connect-LincWiFi
+        }
+        Invoke-LincStep -StepName 'Rename PC' -ScriptBlock { Rename-LincPC }
+        Write-Linclog -Message "All steps completed." -Level Success
+        Write-Linclog -Message "Computer will now restart to finish Windows update process." -Level Info
+        Start-Sleep -Seconds 5
+        Restart-Computer -Force
     }
-    Invoke-LincStep -StepName 'Windows update' -ScriptBlock { Install-LincWindowsUpdate }
-    Invoke-LincStep -StepName 'WiFi Change' -ScriptBlock { 
-        Add-LincWiFi
-        Connect-LincWiFi
-    }
-    Invoke-LincStep -StepName 'Rename PC' -ScriptBlock { Rename-LincPC }
-    Write-Linclog -Message "All steps completed." -Level Success
-    Write-Linclog -Message "Computer will now restart to finish Windows update process." -Level Info
-    Start-Sleep -Seconds 5
-    Restart-Computer -Force
+    
+    
 }
 catch {
     Write-LincLog -Message "Setup failed: $($_.Exception.Message)" -Level Error
